@@ -553,3 +553,27 @@ command! -buffer Toc call s:Toc()
 command! -buffer Toch call s:Toc('horizontal')
 command! -buffer Tocv call s:Toc('vertical')
 command! -buffer Toct call s:Toc('tab')
+
+
+" [SP] Toggle TODO => DONE => ""
+function! ToggleTodo()
+  let line = getline('.')
+  let cline = line('.')
+  let ccol = col('.')
+  let todo = match(line, "TODO")
+  let done = match(line, "DONE")
+  if todo ># 0
+    let newline = substitute(line, "TODO", "DONE", "")
+    let newcol = ccol
+  elseif done ># 0
+    let newline = substitute(line, "DONE ", "", "")
+    let newcol = ccol - 5
+  else
+    let newline = substitute(line, "# ", "# TODO ", "")
+    let newcol = ccol + 5
+  endif
+  call setline('.', newline)
+  call cursor(cline, newcol)
+endfunction
+
+nnoremap gt :call ToggleTodo()<CR>
