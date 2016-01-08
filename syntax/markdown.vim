@@ -91,14 +91,20 @@ syn match  mkdRule         /^\s*-\{3,}$/
 syn match  mkdRule         /^\s*\*\{3,5}$/
 
 "HTML headings
-syn region htmlH1       start="^\s*#"                   end="$" contains=@Spell
-syn region htmlH2       start="^\s*##"                  end="$" contains=@Spell
-syn region htmlH3       start="^\s*###"                 end="$" contains=@Spell
-syn region htmlH4       start="^\s*####"                end="$" contains=@Spell
-syn region htmlH5       start="^\s*#####"               end="$" contains=@Spell
-syn region htmlH6       start="^\s*######"              end="$" contains=@Spell
+syn region htmlH1       start="^\s*#"                   end="$" contains=@Spell,mkdTODO,mkdDONE
+syn region htmlH2       start="^\s*##"                  end="$" contains=@Spell,mkdTODO,mkdDONE
+syn region htmlH3       start="^\s*###"                 end="$" contains=@Spell,mkdTODO,mkdDONE
+syn region htmlH4       start="^\s*####"                end="$" contains=@Spell,mkdTODO,mkdDONE
+syn region htmlH5       start="^\s*#####"               end="$" contains=@Spell,mkdTODO,mkdDONE
+syn region htmlH6       start="^\s*######"              end="$" contains=@Spell,mkdTODO,mkdDONE
 syn match  htmlH1       /^.\+\n=\+$/ contains=@Spell
 syn match  htmlH2       /^.\+\n-\+$/ contains=@Spell
+
+" TODO and DONE
+syn keyword mkdTODO contained TODO
+syn keyword mkdDONE contained DONE
+" syn match mkdTODO 'TODO' contained
+" syn match mkdDONE /DONE/ contained
 
 " YAML frontmatter
 if get(g:, 'vim_markdown_frontmatter', 0)
@@ -133,6 +139,13 @@ HtmlHiLink mkdLinkDef       mkdID
 HtmlHiLink mkdLinkDefTarget mkdURL
 HtmlHiLink mkdLinkTitle     htmlString
 HtmlHiLink mkdDelimiter     Delimiter
+
+"TODO and DONE
+" highlight todo NONE
+" highlight clear todo
+" highlight def todo    ctermbg=2 ctermfg=7
+highlight mkdTODO ctermfg=7 ctermbg=5
+highlight mkdDONE ctermfg=7 ctermbg=2
 
 let b:current_syntax = "mkd"
 
