@@ -56,6 +56,15 @@ Execute (italic with escaped underscores):
   AssertNotEqual SyntaxOf('d'), 'htmlItalic'
 
 Given markdown;
+a *b\*c* d
+
+Execute (italic with escaped asterisks):
+  AssertNotEqual SyntaxOf('a'), 'htmlItalic'
+  AssertEqual SyntaxOf('b'), 'htmlItalic'
+  AssertEqual SyntaxOf('c'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('d'), 'htmlItalic'
+
+Given markdown;
 a __b\_\_c__ d
 
 Execute (bold with escaped underscores):
@@ -86,7 +95,8 @@ Given markdown;
 [a](b) c [d](e)
 
 Execute (multiple links on a line):
-  AssertEqual SyntaxOf('c'), ''
+  AssertNotEqual SyntaxOf('c'), 'mkdLink'
+  AssertNotEqual SyntaxOf('c'), 'mkdURL'
 
 # Autolinks
 
@@ -105,12 +115,6 @@ Given markdown;
 
 Execute (autolink with scheme case is insensitive):
   AssertEqual SyntaxOf('a'), 'mkdInlineURL'
-
-Given markdown;
-<notascheme://a>
-
-Execute (autolink without known scheme is not a link):
-  AssertNotEqual SyntaxOf('n'), 'mkdInlineURL'
 
 Given markdown;
 <a>
@@ -138,7 +142,7 @@ Execute (autolinks can be backslash escaped):
   AssertNotEqual SyntaxOf('<'), 'mkdDelimiter'
 
 Given markdown;
-a (http://b) c
+a (http://b.bb) c
 
 Execute (autolink in parenthesis):
   AssertNotEqual SyntaxOf('a'), 'mkdInlineURL'
@@ -167,6 +171,22 @@ Execute (code blocks can be fenced with tildes):
   AssertEqual SyntaxOf('c'), 'mkdCode'
 
 Given markdown;
+~~~~
+code
+~~~~~
+
+Execute (code blocks can be fenced with tildes longer than 3):
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
+````
+code
+`````
+
+Execute (code blocks can be fenced with backticks longer than 3):
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
 ~~~ruby
 code
 ~~~
@@ -184,6 +204,83 @@ text
 Execute (code blocks can be fenced with backticks and a language specifier):
   AssertEqual SyntaxOf('code'), 'mkdCode'
   AssertNotEqual SyntaxOf('text'), 'mkdCode'
+
+# Indent Code Blocks
+
+Given markdown;
+a
+
+    b
+    c
+
+Execute (indent code blocks):
+  AssertNotEqual SyntaxOf('a'), 'mkdCode'
+  AssertEqual SyntaxOf('b'), 'mkdCode'
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
+# a
+
+b
+
+    c
+
+Execute (indent code blocks after header):
+  AssertNotEqual SyntaxOf('a'), 'mkdCode'
+  AssertNotEqual SyntaxOf('b'), 'mkdCode'
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
+-   a
+
+    b
+
+        c
+
+Execute (indent code blocks after list):
+  AssertNotEqual SyntaxOf('a'), 'mkdCode'
+  AssertNotEqual SyntaxOf('b'), 'mkdCode'
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
+```c++
+#include <iostream>
+code
+```
+
+```ruby
+def a
+end
+```
+
+Execute (fenced code block syntax with a language specifier):
+  let b:func = Markdown_GetFunc('vim-markdown/ftplugin/markdown.vim', 'Markdown_refresh_syntax')
+  call b:func(0)
+  AssertEqual SyntaxOf('include'), 'cInclude'
+  AssertEqual SyntaxOf('code'), 'mkdSnippetCPP'
+  AssertEqual SyntaxOf('def'), 'rubyDefine'
+
+Given markdown;
+```a+b-
+code
+```
+
+Execute (fenced code block syntax with an unknown language specifier):
+  let b:func = Markdown_GetFunc('vim-markdown/ftplugin/markdown.vim', 'Markdown_refresh_syntax')
+  call b:func(0)
+  AssertEqual SyntaxOf('code'), 'mkdSnippetA_B_'
+
+
+Given markdown;
+```
+=
+a
+-
+```
+
+Execute (first = or - in fenced code block is not setex headers):
+  AssertEqual SyntaxOf('='), 'mkdCode'
+  AssertEqual SyntaxOf('-'), 'mkdCode'
 
 # Math
 
@@ -292,6 +389,115 @@ ddd
 Execute (header title starts with #):
   AssertEqual SyntaxOf('a'), 'htmlH1'
   AssertEqual SyntaxOf('b'), 'htmlH2'
+
+Given markdown;
+# h1 space
+
+#h1 nospace
+
+#  h1 2 spaces
+
+# h1 trailing hash #
+
+## h2 space
+
+##h2 nospace
+
+## h2 trailing hash ##
+
+### h3 space
+
+###h3 nospace
+
+### h3 trailing hash ###
+
+#### h4
+
+##### h5
+
+###### h6
+
+Execute (atx headers):
+  AssertEqual SyntaxOf('# h1 space'), 'htmlH1'
+  AssertEqual SyntaxOf('#h1 nospace'), 'htmlH1'
+  AssertEqual SyntaxOf('#  h1 2 spaces'), 'htmlH1'
+  AssertEqual SyntaxOf('# h1 trailing hash #'), 'htmlH1'
+  AssertEqual SyntaxOf('## h2 space'), 'htmlH2'
+  AssertEqual SyntaxOf('##h2 nospace'), 'htmlH2'
+  AssertEqual SyntaxOf('## h2 trailing hash ##'), 'htmlH2'
+  AssertEqual SyntaxOf('### h3 space'), 'htmlH3'
+  AssertEqual SyntaxOf('###h3 nospace'), 'htmlH3'
+  AssertEqual SyntaxOf('### h3 trailing hash ###'), 'htmlH3'
+  AssertEqual SyntaxOf('#### h4'), 'htmlH4'
+  AssertEqual SyntaxOf('##### h5'), 'htmlH5'
+  AssertEqual SyntaxOf('###### h6'), 'htmlH6'
+
+Given markdown;
+# h1 before h2
+
+## h2 between h1s
+
+# h1 after h2
+
+Execute (atx headers relative positions):
+  AssertEqual SyntaxOf('# h1 before h2'), 'htmlH1'
+  AssertEqual SyntaxOf('## h2 between h1s'), 'htmlH2'
+  AssertEqual SyntaxOf('# h1 after h2'), 'htmlH1'
+
+Given markdown;
+setex h1
+========
+
+setex h2
+--------
+
+setex h1 single punctuation
+=
+
+setex h1 punctuation longer than header
+================================
+
+Execute (setex headers):
+  AssertEqual SyntaxOf('setex h1'), 'htmlH1'
+  AssertEqual SyntaxOf('^========$'), 'htmlH1'
+  AssertEqual SyntaxOf('setex h2'), 'htmlH2'
+  AssertEqual SyntaxOf('--------'), 'htmlH2'
+  AssertEqual SyntaxOf('setex h1 single punctuation'), 'htmlH1'
+  AssertEqual SyntaxOf('^=$'), 'htmlH1'
+  AssertEqual SyntaxOf('setex h1 punctuation longer than header'), 'htmlH1'
+  AssertEqual SyntaxOf('^================================$'), 'htmlH1'
+
+Given markdown;
+- not Setex
+- because list
+
+Execute (prevent list vs Setex confusion):
+  AssertNotEqual SyntaxOf('- not Setex'), 'htmlH2'
+  AssertNotEqual SyntaxOf('- becuase list'), 'htmlH2'
+
+Given markdown;
+setex h1 before atx
+===================
+
+## atx h2
+
+### atx h3
+
+# atx h1
+
+setex h2
+------------------
+
+### atx h3 2
+
+Execute (mixed atx and setex headers):
+  AssertEqual SyntaxOf('setex h1 before atx'), 'htmlH1'
+  AssertEqual SyntaxOf('==================='), 'htmlH1'
+  AssertEqual SyntaxOf('## atx h2'), 'htmlH2'
+  AssertEqual SyntaxOf('### atx h3'), 'htmlH3'
+  AssertEqual SyntaxOf('# atx h1'), 'htmlH1'
+  AssertEqual SyntaxOf('setex h2'), 'htmlH2'
+  AssertEqual SyntaxOf('------------------'), 'htmlH2'
 
 # List
 
