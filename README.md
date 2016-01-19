@@ -1,5 +1,12 @@
 # Vim Markdown
 
+> This fork only adds two things to the standard vim-markdown:
+>
+> 1. TODO and DONE after headers are syntax highlighted.
+> 2. You can cycle a header line between TODO and DONE with `gt`.
+>
+> That's it. I use it as a replacement for org-mode.
+
 [![Build Status](https://travis-ci.org/plasticboy/vim-markdown.svg)](https://travis-ci.org/plasticboy/vim-markdown)
 
 Syntax highlighting, matching rules and mappings for [the original Markdown](http://daringfireball.net/projects/markdown/) and extensions.
