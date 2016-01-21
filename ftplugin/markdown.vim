@@ -705,4 +705,7 @@ function! ToggleTodo()
   call cursor(cline, newcol)
 endfunction
 
-nnoremap gt :call ToggleTodo()<CR>
+nnoremap <Leader>tt :call ToggleTodo()<CR>
+nnoremap <Leader>nt ggO# TODO<Space>
+" Wrap current selection in back-ticks to make a code-block
+vnoremap ` xO```<Esc>kpO```<Esc>$
