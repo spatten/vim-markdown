@@ -138,9 +138,6 @@ HtmlHiLink mkdLinkTitle     htmlString
 HtmlHiLink mkdDelimiter     Delimiter
 
 "TODO and DONE
-" highlight todo NONE
-" highlight clear todo
-" highlight def todo    ctermbg=2 ctermfg=7
 highlight mkdTODO ctermfg=7 ctermbg=5
 highlight mkdDONE ctermfg=7 ctermbg=2
 
