@@ -686,9 +686,11 @@ augroup END
 
 " [SP] Toggle TODO => DONE => ""
 function! ToggleTodo()
-  let line = getline('.')
   let cline = line('.')
   let ccol = col('.')
+  call s:MoveToCurHeader()
+  let tline = line('.')
+  let line = getline('.')
   let todo = match(line, "TODO")
   let done = match(line, "DONE")
   if todo ># 0
@@ -700,6 +702,9 @@ function! ToggleTodo()
   else
     let newline = substitute(line, "# ", "# TODO ", "")
     let newcol = ccol + 5
+  endif
+  if tline !=# cline
+    let newcol = ccol
   endif
   call setline('.', newline)
   call cursor(cline, newcol)
