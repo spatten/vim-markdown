@@ -47,6 +47,7 @@ syn region mkdFootnotes matchgroup=mkdDelimiter start="\[^"    end="\]"
 syn region mkdID matchgroup=mkdDelimiter        start="\["    end="\]" contained oneline
 syn region mkdURL matchgroup=mkdDelimiter       start="("     end=")"  contained oneline
 syn region mkdLink matchgroup=mkdDelimiter      start="\\\@<!!\?\[" end="\]\ze\s*[[(]" contains=@mkdNonListItem,@Spell nextgroup=mkdURL,mkdID skipwhite oneline
+syn region cmComment matchgroup=mdkDelimiter    start="{{\>\>" end="\<\<}}" contained oneline
 
 " Autolink without angle brackets.
 " mkd  inline links:           protocol   optional  user:pass@       sub/domain                 .com, .co.uk, etc      optional port   path/querystring/hash fragment
@@ -136,6 +137,9 @@ HtmlHiLink mkdLinkDef       mkdID
 HtmlHiLink mkdLinkDefTarget mkdURL
 HtmlHiLink mkdLinkTitle     htmlString
 HtmlHiLink mkdDelimiter     Delimiter
+
+"highlighting for CriticMarkup groups
+HtmlHiLink cmComment        Comment
 
 "TODO and DONE
 highlight mkdTODO ctermfg=7 ctermbg=5
