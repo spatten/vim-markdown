@@ -100,8 +100,10 @@ syn match  mkdRule         /^\s*-\{3,}$/
 syn match  mkdRule         /^\s*\*\{3,5}$/
 
 " TODO and DONE
-syn keyword mkdTODO contained TODO
-syn keyword mkdDONE contained DONE
+syn case match
+syn keyword mkdTODO TODO contained
+syn keyword mkdDONE DONE contained
+syn case ignore
 
 " YAML frontmatter
 if get(g:, 'vim_markdown_frontmatter', 0)
